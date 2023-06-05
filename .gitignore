@@ -33,3 +33,5 @@
 
 # Custom files
 description.txt
+bin/
+obj/
