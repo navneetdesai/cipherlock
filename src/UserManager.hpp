@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "cipherlock.hpp"
 
 
 struct User {
@@ -24,17 +25,22 @@ public:
     std::vector<std::string> list_passwords(const std::string& username);
     bool store_password(const std::string& username, const std::string& password);
     void remove_user(const std::string& username);
+    void set_cipher(CipherLock cipher);
+    CipherLock get_cipher();
 
 private:
     std::string filename;
     std::vector<User> users;
     std::vector<Password> passwords;
     bool _is_logged_in;
+    CipherLock cipher;
 
     bool is_user_exists(const std::string& username);
     void load_users();
     void load_passwords();
     void save_users();
+    
+    
 };
 
 #endif

@@ -5,6 +5,7 @@
 
 class CipherLock {
 public:
+    explicit CipherLock();
     explicit CipherLock(int key);
     std::string encrypt(const std::string& message);
     std::string decrypt(const std::string& cipher);

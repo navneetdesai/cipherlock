@@ -2,8 +2,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include "cipherlock.hpp"
 
 UserManager::UserManager(const std::string& filename) : filename(filename) {
+    cipher = CipherLock(0);
     load_users();
     load_passwords();
     _is_logged_in = false;
@@ -14,8 +16,8 @@ bool UserManager::register_user(const std::string& username, const std::string& 
         std::cerr << "User already exists" << std::endl;
         return false; // User already exists
     }
-
-    users.push_back({username, password});
+    std::string encrypted_password = cipher.encrypt(password);
+    users.push_back({username, encrypted_password});
     save_users();
     return true;
 }
@@ -114,6 +116,7 @@ bool UserManager::store_password(const std::string& username, const std::string&
         std::cerr << "There was an issue with password retrieval" << std::endl;
         return false;
     }
+    
     for (const User& user : users) {
         file << user.username << " " << user.password << std::endl;
     }
@@ -138,4 +141,10 @@ void UserManager::save_users() {
     file.close();
 }
 
+CipherLock UserManager::get_cipher() {
+    return cipher;
+}
 
+void UserManager::set_cipher(CipherLock cipher) {
+    this->cipher = cipher;
+}

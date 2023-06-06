@@ -46,7 +46,7 @@ int get_cipher_key() {
  * @param cipherlock 
  * @param key 
  */
-void store_or_retrieve(UserManager manager, CipherLock cipherlock, int key) {
+void store_or_retrieve(UserManager manager, int key) {
     int option = -1;
     std::string username;
     std::string password;
@@ -62,14 +62,14 @@ void store_or_retrieve(UserManager manager, CipherLock cipherlock, int key) {
         std::cin >> username;
         std::cout << "Enter password: ";
         std::cin >> password;
-        manager.store_password(username, cipherlock.encrypt(password));
+        manager.store_password(username, password);
         break;
     case 2:
         std::cout << "Enter username: ";
         std::cin >> username;
         std::cout << "Enter password: ";
         std::cin >> password;
-        std::cout << "Your password is: " << cipherlock.decrypt(manager.list_passwords(username)[0]) << std::endl;
+        // std::cout << "Your password is: " << manager.get_password() << std::endl;
         break;
     case 3:
         break;
@@ -84,7 +84,7 @@ void store_or_retrieve(UserManager manager, CipherLock cipherlock, int key) {
  *        
  * @param option 
  */
-void use_cipherlock(UserManager manager, CipherLock cipherlock, int option, int key) {
+void use_cipherlock(UserManager manager, int option, int key) {
 
     std::string username;
     std::string password;
@@ -107,7 +107,7 @@ void use_cipherlock(UserManager manager, CipherLock cipherlock, int option, int 
         std::cin >> password;
         if (manager.login_user(username, password)) {
             std::cout << "User logged in successfully!" << std::endl;
-            store_or_retrieve(manager, cipherlock, key);
+            store_or_retrieve(manager, key);
         } else {
             std::cout << "User login failed!" << std::endl;
         }
@@ -123,16 +123,15 @@ void use_cipherlock(UserManager manager, CipherLock cipherlock, int option, int 
  */
 int main() {
     int option;
-    CipherLock cipherlock(0);
     while (true) {
         option = print_features();
         if (option == 5) {
             break;
         }
         int key = get_cipher_key();
-        cipherlock.set_key(key);
         UserManager manager("users.txt");
-        use_cipherlock(manager, cipherlock, option, key);
+        manager.set_cipher(CipherLock(key));
+        use_cipherlock(manager, option, key);
     }
 
     return 0;
