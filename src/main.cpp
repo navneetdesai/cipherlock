@@ -1,19 +1,24 @@
-/*
- * Copyright (c) 2023 Navneet Desai
- */
-
 #include <iostream>
-#include "user.hpp"
-#include "user_manager.hpp"
-using namespace std;
+#include "cipherlock.hpp"
 
 int main() {
-    UserManager userManager;
+    int key = 3; // Choose a key value
 
-    // Register a new user
-    userManager.registerUser("john_doe", "password123", "john.doe@example.com");
-    cout << "Registered a new user!" << endl;
+    // Create an instance of the CipherLock class
+    CipherLock cipherLock(key);
 
+    // Get input from the user
+    std::string message;
+    std::cout << "Enter a message to encrypt: ";
+    std::getline(std::cin, message);
+
+    // Encrypt the message
+    std::string encrypted = cipherLock.encrypt(message);
+    std::cout << "Encrypted message: " << encrypted << std::endl;
+
+    // Decrypt the message
+    std::string decrypted = cipherLock.decrypt(encrypted);
+    std::cout << "Decrypted message: " << decrypted << std::endl;
 
     return 0;
 }

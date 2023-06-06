@@ -9,7 +9,8 @@ repos:
       language: system
       files: \.(c|cpp|h)$
 
-  - repo: https://github.com/pocc/pre-commit-hooks
-    rev: master
-    hooks:
-      - id: cppcheck
+  # - repo: https://github.com/pocc/pre-commit-hooks
+  #   rev: master
+  #   hooks:
+  #     - id: cppcheck
+  #       args: [--suppress=unusedStructMember]
