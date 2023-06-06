@@ -1,4 +1,4 @@
-#include "CipherLock.hpp"
+#include "cipherlock.hpp"
 
 CipherLock::CipherLock(int key) : key(key) {}
 

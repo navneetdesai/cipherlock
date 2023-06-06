@@ -4,29 +4,32 @@
 #include <sstream>
 
 UserManager::UserManager(const std::string& filename) : filename(filename) {
-    loadUsers();
+    load_users();
+    load_passwords();
+    _is_logged_in = false;
 }
 
-bool UserManager::registerUser(const std::string& username, const std::string& password) {
-    if (isUserExists(username)) {
+bool UserManager::register_user(const std::string& username, const std::string& password) {
+    if (is_user_exists(username)) {
         return false; // User already exists
     }
 
     users.push_back({username, password});
-    saveUsers();
+    save_users();
     return true;
 }
 
-bool UserManager::loginUser(const std::string& username, const std::string& password) {
+bool UserManager::login_user(const std::string& username, const std::string& password) {
     for (const User& user : users) {
         if (user.username == username && user.password == password) {
-            return true; // Login successful
+            _is_logged_in = true;
+            return _is_logged_in; // Login successful
         }
     }
     return false; // Login failed
 }
 
-std::vector<std::string> UserManager::listPasswords(const std::string& username) {
+std::vector<std::string> UserManager::list_passwords(const std::string& username) {
     std::vector<std::string> passwords;
 
     for (const User& user : users) {
@@ -38,18 +41,18 @@ std::vector<std::string> UserManager::listPasswords(const std::string& username)
     return passwords;
 }
 
-void UserManager::removeUser(const std::string& username) {
+void UserManager::remove_user(const std::string& username) {
     auto it = std::remove_if(users.begin(), users.end(), [&](const User& user) {
         return user.username == username;
     });
 
     if (it != users.end()) {
         users.erase(it, users.end());
-        saveUsers();
+        save_users();
     }
 }
 
-bool UserManager::isUserExists(const std::string& username) {
+bool UserManager::is_user_exists(const std::string& username) {
     for (const User& user : users) {
         if (user.username == username) {
             return true;
@@ -58,7 +61,7 @@ bool UserManager::isUserExists(const std::string& username) {
     return false;
 }
 
-void UserManager::loadUsers() {
+void UserManager::load_users() {
     std::ifstream file(filename);
     if (!file) {
         return; 
@@ -78,7 +81,49 @@ void UserManager::loadUsers() {
     file.close();
 }
 
-void UserManager::saveUsers() {
+void UserManager::load_passwords() {
+    std::ifstream file("passwords.txt");
+    if (!file) {
+        return; 
+    }
+
+    passwords.clear();
+
+    std::string line;
+    while (std::getline(file, line)) {
+        std::string username, password;
+        std::istringstream iss(line);
+        if (iss >> username >> password) {
+            passwords.push_back({username, password});
+        }
+    }
+
+    file.close();
+}
+
+
+
+bool UserManager::store_password(const std::string& username, const std::string& password) {
+    std::ofstream file("passwords.txt");
+    if (!_is_logged_in) {
+        std::cerr << "You must be logged in to store a password" << std::endl;
+        return false;
+    }
+    if (!file) {
+        std::cerr << "There was an issue with password retrieval" << std::endl;
+        return false;
+    }
+    for (const User& user : users) {
+        file << user.username << " " << user.password << std::endl;
+    }
+
+    file.close();
+    return true;
+}
+
+
+
+void UserManager::save_users() {
     std::ofstream file(filename);
     if (!file) {
         std::cerr << "Failed to open file for writing: " << filename << std::endl;
@@ -91,3 +136,5 @@ void UserManager::saveUsers() {
 
     file.close();
 }
+
+
