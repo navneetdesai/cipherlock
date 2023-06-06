@@ -21,3 +21,7 @@ std::string CipherLock::decrypt(const std::string& cipher) {
     }
     return decrypted;
 }
+
+void CipherLock::set_key(int key) {
+    this->key = key;
+}

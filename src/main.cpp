@@ -12,14 +12,14 @@
  */
 int print_features() {
     int option = -1;
-    std::cout << "Welcome to Cipherlock!\n";
+    std::cout << "\n\nWelcome to Cipherlock!\n";
     do {
         std::cout << "Choose an option: \n";   
         std::cout << "1. Register user\n";
         std::cout << "2. Login user\n";
         std::cout << "3. List passwords\n";
         std::cout << "4. Remove user\n";
-        std::cout << "5. Exit\n"; 
+        std::cout << "5. Exit\n\n"; 
         std::cin >> option;
     } while (option < 1 || option > 5);
     return option;
@@ -122,13 +122,18 @@ void use_cipherlock(UserManager manager, CipherLock cipherlock, int option, int 
  * @return int 
  */
 int main() {
-    int option = print_features();
-    int key = get_cipher_key();
-    CipherLock cipherlock(key);
-    UserManager manager("users.txt");
-    use_cipherlock(manager, cipherlock, option, key);
-
-    
+    int option;
+    CipherLock cipherlock(0);
+    while (true) {
+        option = print_features();
+        if (option == 5) {
+            break;
+        }
+        int key = get_cipher_key();
+        cipherlock.set_key(key);
+        UserManager manager("users.txt");
+        use_cipherlock(manager, cipherlock, option, key);
+    }
 
     return 0;
 }

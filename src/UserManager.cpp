@@ -11,6 +11,7 @@ UserManager::UserManager(const std::string& filename) : filename(filename) {
 
 bool UserManager::register_user(const std::string& username, const std::string& password) {
     if (is_user_exists(username)) {
+        std::cerr << "User already exists" << std::endl;
         return false; // User already exists
     }
 
