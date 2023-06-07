@@ -1,3 +1,12 @@
+/**
+ * @file UserManager.hpp
+ * @author Navneet Desai
+ * @brief 
+ * @version 0.1
+ * @date 2023-06-07
+ * 
+ * 
+ */
 #ifndef USER_MANAGER_HPP
 #define USER_MANAGER_HPP
 

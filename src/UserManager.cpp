@@ -1,17 +1,41 @@
+/**
+ * @file UserManager.cpp
+ * @author Navneet Desai
+ * @brief 
+ * @version 0.1
+ * @date 2023-06-07
+ * 
+ * 
+ * 
+ */
 #include "UserManager.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include "cipherlock.hpp"
 
+/**
+ * @brief Construct a new User Manager:: User Manager object
+ * 
+ * @param filename 
+ */
 UserManager::UserManager(const std::string& filename) : filename(filename) {
     cipher = CipherLock(0);
-    load_users();
+    load_users();   // load users and passwords from file
     load_passwords();
-    _is_logged_in = false;
+    _is_logged_in = false;  // status of user login
     _logged_in_user = {"", ""};
 }
 
+
+/**
+ * @brief Registers a new user.
+ * 
+ * @param username 
+ * @param password 
+ * @return true 
+ * @return false 
+ */
 bool UserManager::register_user(const std::string& username, const std::string& password) {
     if (is_user_exists(username)) {
         std::cerr << "User already exists" << std::endl;
@@ -23,6 +47,14 @@ bool UserManager::register_user(const std::string& username, const std::string& 
     return true;
 }
 
+/**
+ * @brief Logs in a user.
+ * 
+ * @param username 
+ * @param password 
+ * @return true 
+ * @return false 
+ */
 bool UserManager::login_user(const std::string& username, const std::string& password) {
     for (const User& user : users) {
         std::string encrypted_password = cipher.encrypt(password);
@@ -36,6 +68,12 @@ bool UserManager::login_user(const std::string& username, const std::string& pas
     return false; // Login failed
 }
 
+/**
+ * @brief Lists all the passwords for a user.
+ * 
+ * @param username 
+ * @return std::vector<std::vector<std::string>> 
+ */
 std::vector<std::vector<std::string>> UserManager::list_passwords(const std::string& username) {
     // return 2d vector of identifiers and passwords
     std::vector<std::vector<std::string>> results;
@@ -47,6 +85,11 @@ std::vector<std::vector<std::string>> UserManager::list_passwords(const std::str
     return results;
 }
 
+/**
+ * @brief Removes a user from the database.
+ * 
+ * @param username 
+ */
 void UserManager::remove_user(const std::string& username) {
     auto it = std::remove_if(users.begin(), users.end(), [&](const User& user) {
         return user.username == username;
@@ -58,6 +101,13 @@ void UserManager::remove_user(const std::string& username) {
     }
 }
 
+/**
+ * @brief Checks if a user exists.
+ * 
+ * @param username 
+ * @return true 
+ * @return false 
+ */
 bool UserManager::is_user_exists(const std::string& username) {
     for (const User& user : users) {
         if (user.username == username) {
@@ -67,6 +117,10 @@ bool UserManager::is_user_exists(const std::string& username) {
     return false;
 }
 
+/**
+ * @brief Loads users from file.
+ * 
+ */
 void UserManager::load_users() {
     std::ifstream file(filename);
     if (!file) {
@@ -87,6 +141,11 @@ void UserManager::load_users() {
     file.close();
 }
 
+
+/**
+ * @brief Loads passwords from file.
+ * 
+ */
 void UserManager::load_passwords() {
     std::ifstream file("passwords.txt");
     if (!file) {
@@ -108,7 +167,14 @@ void UserManager::load_passwords() {
     file.close();
 }
 
-
+/**
+ * @brief Stores a password for a user.
+ * 
+ * @param identifier 
+ * @param password 
+ * @return true 
+ * @return false 
+ */
 bool UserManager::store_password(const std::string& identifier, const std::string& password) {
     std::ofstream file("passwords.txt");
     std::string username = _logged_in_user.username;
