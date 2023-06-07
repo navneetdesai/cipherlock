@@ -37,3 +37,6 @@ bin/
 obj/
 users.txt
 .vscode
+
+passwords.txt
+
