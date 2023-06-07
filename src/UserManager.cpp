@@ -9,6 +9,7 @@ UserManager::UserManager(const std::string& filename) : filename(filename) {
     load_users();
     load_passwords();
     _is_logged_in = false;
+    _logged_in_user = {"", ""};
 }
 
 bool UserManager::register_user(const std::string& username, const std::string& password) {
@@ -24,24 +25,26 @@ bool UserManager::register_user(const std::string& username, const std::string& 
 
 bool UserManager::login_user(const std::string& username, const std::string& password) {
     for (const User& user : users) {
-        if (user.username == username && user.password == password) {
+        std::string encrypted_password = cipher.encrypt(password);
+        if (user.username == username && user.password == 
+        encrypted_password) {
             _is_logged_in = true;
+            _logged_in_user = user;
             return _is_logged_in; // Login successful
         }
     }
     return false; // Login failed
 }
 
-std::vector<std::string> UserManager::list_passwords(const std::string& username) {
-    std::vector<std::string> passwords;
-
-    for (const User& user : users) {
-        if (user.username == username) {
-            passwords.push_back(user.password);
+std::vector<std::vector<std::string>> UserManager::list_passwords(const std::string& username) {
+    // return 2d vector of identifiers and passwords
+    std::vector<std::vector<std::string>> results;
+    for (const Password& password : passwords) {
+        if (password.username == username) {
+            results.push_back({password.identifier, cipher.decrypt(password.password)});
         }
     }
-
-    return passwords;
+    return results;
 }
 
 void UserManager::remove_user(const std::string& username) {
@@ -93,11 +96,12 @@ void UserManager::load_passwords() {
     passwords.clear();
 
     std::string line;
+    std::string identifier;
     while (std::getline(file, line)) {
         std::string username, password;
         std::istringstream iss(line);
-        if (iss >> username >> password) {
-            passwords.push_back({username, password});
+        if (iss >> username >> identifier >> password) {
+            passwords.push_back({username, identifier, password});
         }
     }
 
@@ -105,9 +109,9 @@ void UserManager::load_passwords() {
 }
 
 
-
-bool UserManager::store_password(const std::string& username, const std::string& password) {
+bool UserManager::store_password(const std::string& identifier, const std::string& password) {
     std::ofstream file("passwords.txt");
+    std::string username = _logged_in_user.username;
     if (!_is_logged_in) {
         std::cerr << "You must be logged in to store a password" << std::endl;
         return false;
@@ -116,13 +120,23 @@ bool UserManager::store_password(const std::string& username, const std::string&
         std::cerr << "There was an issue with password retrieval" << std::endl;
         return false;
     }
-    
-    for (const User& user : users) {
-        file << user.username << " " << user.password << std::endl;
-    }
-
+    std::string encrypted_password = cipher.encrypt(password);
+    file << username << " " << identifier << " " << encrypted_password << std::endl;
     file.close();
     return true;
+}
+
+std::string UserManager::get_password(const std::string& username) {
+    if (!_is_logged_in) {
+        std::cerr << "You must be logged in to retrieve a password" << std::endl;
+        return "";
+    }
+    for (const Password& password : passwords) {
+        if (password.username == username) {
+            return cipher.decrypt(password.password);
+        }
+    }
+    return "No password found";
 }
 
 

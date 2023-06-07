@@ -1,3 +1,13 @@
+/**
+ * @file main.cpp
+ * @author Navneet Desai
+ * @brief 
+ * @version 0.1
+ * @date 2023-06-07
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include <iostream>
 #include "cipherlock.hpp"
 #include "UserManager.hpp"
@@ -18,7 +28,6 @@ int print_features() {
         std::cout << "1. Register user\n";
         std::cout << "2. Login user\n";
         std::cout << "3. List passwords\n";
-        std::cout << "4. Remove user\n";
         std::cout << "5. Exit\n\n"; 
         std::cin >> option;
     } while (option < 1 || option > 5);
@@ -48,7 +57,7 @@ int get_cipher_key() {
  */
 void store_or_retrieve(UserManager manager, int key) {
     int option = -1;
-    std::string username;
+    std::string identifier;
     std::string password;
     do {
         std::cout << "1. Store password\n";
@@ -58,20 +67,16 @@ void store_or_retrieve(UserManager manager, int key) {
     } while (option < 1 || option > 3);
     switch (option) {
     case 1:
-        std::cout << "Enter username: ";
-        std::cin >> username;
+        std::cout << "Enter password identifier: ";
+        std::cin >> identifier;
         std::cout << "Enter password: ";
         std::cin >> password;
-        manager.store_password(username, password);
+        manager.store_password(identifier, password);
         break;
     case 2:
-        std::cout << "Enter username: ";
-        std::cin >> username;
-        std::cout << "Enter password: ";
-        std::cin >> password;
-        // std::cout << "Your password is: " << manager.get_password() << std::endl;
-        break;
-    case 3:
+        std::cout << "Enter identifier: ";
+        std::cin >> identifier;
+        std::cout << "Your password is: " << manager.get_password(identifier) << std::endl;
         break;
     default:
         break;
@@ -112,6 +117,17 @@ void use_cipherlock(UserManager manager, int option, int key) {
             std::cout << "User login failed!" << std::endl;
         }
         break;
+    case 3:
+        std::cout << "Enter username for listing passwords: " << std::endl;
+        std::cin >> username;
+        std::cout << "Passwords for " << username << " are: " << std::endl;
+        for (const auto& entry : manager.list_passwords(username)) {
+            for (const auto& item : entry) {
+                std::cout << item << " ";
+            }
+            std::cout << std::endl;
+        }
+        break;  
     }
 }
 
